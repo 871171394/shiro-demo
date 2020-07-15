@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="true" monitoring="autodetect"
+         dynamicConfig="true">
+    <diskStore path="java.io.tmpdir"/>
+    <defaultCache
+            maxElementsInMemory="10000"
+            maxElementsOnDisk="0"
+            eternal="true"
+            overflowToDisk="true"
+            diskPersistent="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="0"
+            diskSpoolBufferSizeMB="50"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LFU"
+    />
+    <cache name="cache"
+           maxEntriesLocalHeap="1000"
+           maxEntriesLocalDisk="1000"
+           eternal="true"
+           diskSpoolBufferSizeMB="100"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+    <!-- 登录记录缓存 锁定10分钟 -->
+    <cache name="passwordRetryCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           overflowToDisk="true"
+           timeToIdleSeconds="600"
+           timeToLiveSeconds="0"
+           diskPersistent="false"
+           statistics="true">
+    </cache>
+    <!-- 验证缓存 -->
+    <cache name="authenticationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="0"
+           overflowToDisk="true"
+           statistics="true">
+    </cache>
+</ehcache>
