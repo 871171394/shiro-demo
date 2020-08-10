@@ -8,6 +8,7 @@ import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Huang.Hua.Fu
  * @date 2020/7/13 16:06
  */
+@RestControllerAdvice
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
     private Cache<String, AtomicInteger> passwordRetryCache;
     /**
@@ -26,6 +28,12 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         passwordRetryCache = cacheManager.getCache("passwordRetryCache");
     }
 
+    /**
+     * 自定义认证
+     * @param token
+     * @param info
+     * @return
+     */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         String username = (String) token.getPrincipal();
@@ -42,10 +50,8 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         // 获取密码
         String plaintext = new String(upToken.getPassword());
-        System.out.println("密码："+plaintext);
         // 获取原始密码
         String hashed =info.getCredentials().toString();
-        System.out.println("原密码："+hashed);
         // 参数1.明文密码  2.加密密码
         boolean checkpw = BCrypt.checkpw(plaintext, hashed);
         if (checkpw) {
