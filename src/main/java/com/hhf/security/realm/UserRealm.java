@@ -3,7 +3,7 @@ package com.hhf.security.realm;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hhf.bean.table.UserDO;
 import com.hhf.dao.UserMapper;
-import com.hhf.manager.UserManger;
+import com.hhf.manager.AuthorityManager;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -12,6 +12,7 @@ import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -26,7 +27,7 @@ import java.util.Optional;
  */
 public class UserRealm extends AuthorizingRealm {
     @Resource private UserMapper userMapper;
-    @Resource private UserManger manger;
+    @Resource private AuthorityManager authorityManager;
     /**
      * 授权
      * 只有需要验证权限时才会调用, 授权查询回调函数, 进行鉴权但缓存中无用户的授权信息时调用.
@@ -37,9 +38,11 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("进行授权逻辑");
-        SimpleAuthenticationInfo info=new SimpleAuthenticationInfo();
-
-        return null;
+        String username = (String) principalCollection.getPrimaryPrincipal();
+        SimpleAuthorizationInfo info=new SimpleAuthorizationInfo();
+        authorityManager.get(username).forEach(api->
+                info.addStringPermission(api.getUri().replaceAll("\\{[^}]*\\}","*")+"=="+api.getMethod()));
+        return info;
     }
 
     /**

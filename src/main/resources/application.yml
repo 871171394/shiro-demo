@@ -9,3 +9,6 @@ spring:
 mybatis-plus:
   # 支持统配符 * 或者 ; 分割
   type-enums-package: com.hhf.bean.constant
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
